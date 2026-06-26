@@ -18,7 +18,7 @@ function Login() {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", form);
+      const res = await axios.post("${import.meta.env.VITE_API_URL}/auth/login", form);
       login({ name: res.data.name, role: res.data.role }, res.data.token);
       if (res.data.role === "admin") navigate("/admin");
       else if (res.data.role === "driver") navigate("/driver");
