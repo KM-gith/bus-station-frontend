@@ -14,7 +14,7 @@ function DriverDashboard() {
 
   const fetchSchedules = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/schedules", authHeader);
+      const res = await axios.get("${import.meta.env.VITE_API_URL}/schedules", authHeader);
       setSchedules(res.data);
     } catch {
       setError("Failed to fetch schedules.");
@@ -30,7 +30,7 @@ function DriverDashboard() {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      await axios.put(`http://localhost:5000/schedules/${id}`, { status }, authHeader);
+      await axios.put(`${import.meta.env.VITE_API_URL}/schedules/${id}`, { status }, authHeader);
       fetchSchedules();
     } catch {
       setError("Failed to update status.");

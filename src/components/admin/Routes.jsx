@@ -19,7 +19,7 @@ function Routes() {
 
   const fetchRoutes = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/routes", authHeader);
+      const res = await axios.get("${import.meta.env.VITE_API_URL}/routes", authHeader);
       setRoutes(res.data);
     } catch {
       setError("Failed to fetch routes.");
@@ -36,10 +36,10 @@ function Routes() {
     e.preventDefault();
     try {
       if (editId) {
-        await axios.put(`http://localhost:5000/routes/${editId}`, form, authHeader);
+        await axios.put(`${import.meta.env.VITE_API_URL}/routes/${editId}`, form, authHeader);
         setEditId(null);
       } else {
-        await axios.post("http://localhost:5000/routes", form, authHeader);
+        await axios.post("${import.meta.env.VITE_API_URL}/routes", form, authHeader);
       }
       setForm({ origin: "", destination: "", distance: "", duration: "", price: "", status: "active" });
       fetchRoutes();
@@ -62,7 +62,7 @@ function Routes() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/routes/${id}`, authHeader);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/routes/${id}`, authHeader);
       fetchRoutes();
     } catch {
       setError("Failed to delete route.");

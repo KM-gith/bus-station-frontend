@@ -10,7 +10,7 @@ function Tickets() {
 
   const fetchTickets = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/tickets", authHeader);
+      const res = await axios.get("${import.meta.env.VITE_API_URL}/tickets", authHeader);
       setTickets(res.data);
     } catch {
       setError("Failed to fetch tickets.");

@@ -22,9 +22,9 @@ function Schedules() {
   const fetchAll = async () => {
     try {
       const [s, b, r] = await Promise.all([
-        axios.get("http://localhost:5000/schedules", authHeader),
-        axios.get("http://localhost:5000/buses", authHeader),
-        axios.get("http://localhost:5000/routes", authHeader),
+        axios.get("${import.meta.env.VITE_API_URL}/schedules", authHeader),
+        axios.get("${import.meta.env.VITE_API_URL}/buses", authHeader),
+        axios.get("${import.meta.env.VITE_API_URL}/routes", authHeader),
       ]);
       setSchedules(s.data);
       setBuses(b.data);
@@ -44,10 +44,10 @@ function Schedules() {
     e.preventDefault();
     try {
       if (editId) {
-        await axios.put(`http://localhost:5000/schedules/${editId}`, form, authHeader);
+        await axios.put(`${import.meta.env.VITE_API_URL}/schedules/${editId}`, form, authHeader);
         setEditId(null);
       } else {
-        await axios.post("http://localhost:5000/schedules", form, authHeader);
+        await axios.post("${import.meta.env.VITE_API_URL}/schedules", form, authHeader);
       }
       setForm({ bus: "", route: "", departureTime: "", arrivalTime: "", availableSeats: "", status: "scheduled" });
       fetchAll();
@@ -70,7 +70,7 @@ function Schedules() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/schedules/${id}`, authHeader);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/schedules/${id}`, authHeader);
       fetchAll();
     } catch {
       setError("Failed to delete schedule.");
