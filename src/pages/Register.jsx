@@ -10,6 +10,7 @@ function Register() {
     password: "",
     confirm: "",
     role: "passenger",
+    adminCode: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -32,6 +33,7 @@ function Register() {
         email: form.email,
         password: form.password,
         role: form.role,
+        adminCode: form.adminCode,
       });
       setSuccess("Account created! Redirecting...");
       setTimeout(() => navigate("/login"), 1500);
@@ -65,7 +67,6 @@ function Register() {
       >
         {/* Logo */}
         <div className="text-center mb-6">
-          
           <h2 className="text-3xl font-black text-white">Create Account</h2>
           <p className="text-blue-200 text-sm mt-1">Join Bus Station Scheduling System</p>
         </div>
@@ -92,10 +93,7 @@ function Register() {
               onChange={handleChange}
               required
               className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.3)",
-              }}
+              style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
             />
           </div>
           <div>
@@ -108,10 +106,7 @@ function Register() {
               onChange={handleChange}
               required
               className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.3)",
-              }}
+              style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
             />
           </div>
           <div>
@@ -124,10 +119,7 @@ function Register() {
               onChange={handleChange}
               required
               className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.3)",
-              }}
+              style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
             />
           </div>
           <div>
@@ -140,10 +132,7 @@ function Register() {
               onChange={handleChange}
               required
               className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.3)",
-              }}
+              style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
             />
           </div>
           <div>
@@ -153,16 +142,33 @@ function Register() {
               value={form.role}
               onChange={handleChange}
               className="w-full p-3.5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.3)",
-              }}
+              style={{ background: "rgba(30,58,138,0.8)", border: "1px solid rgba(255,255,255,0.3)" }}
             >
-              <option value="passenger" style={{ color: "#111827" }}>Passenger</option>
-              <option value="driver" style={{ color: "#111827" }}> Driver</option>
-              <option value="admin" style={{ color: "#111827" }}>Admin</option>
+              <option value="passenger"> Passenger</option>
+              <option value="driver"> Driver</option>
+              <option value="admin"> Admin</option>
             </select>
           </div>
+
+          {/* ✅ Admin code input — admin select godhan qofa mul'ata */}
+          {form.role === "admin" && (
+            <div>
+              <label className="text-sm font-semibold text-white mb-1.5 block">
+                 Admin Secret Code
+              </label>
+              <input
+                name="adminCode"
+                type="password"
+                placeholder="Enter secret code"
+                value={form.adminCode}
+                onChange={handleChange}
+                required
+                className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
+              />
+            </div>
+          )}
+
           <button
             type="submit"
             className="w-full p-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition text-base mt-1 shadow-lg"
