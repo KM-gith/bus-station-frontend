@@ -19,7 +19,7 @@ function Routes() {
 
   const fetchRoutes = async () => {
     try {
-      const res = await axios.get("${import.meta.env.VITE_API_URL}/routes", authHeader);
+      const res = await axios.get("https://bus-station-backend-265a.onrender.com/routes", authHeader);
       setRoutes(res.data);
     } catch {
       setError("Failed to fetch routes.");
@@ -36,10 +36,10 @@ function Routes() {
     e.preventDefault();
     try {
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/routes/${editId}`, form, authHeader);
+        await axios.put(`https://bus-station-backend-265a.onrender.com/routes/${editId}`, form, authHeader);
         setEditId(null);
       } else {
-        await axios.post("${import.meta.env.VITE_API_URL}/routes", form, authHeader);
+        await axios.post("https://bus-station-backend-265a.onrender.com/routes", form, authHeader);
       }
       setForm({ origin: "", destination: "", distance: "", duration: "", price: "", status: "active" });
       fetchRoutes();
@@ -62,7 +62,7 @@ function Routes() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/routes/${id}`, authHeader);
+      await axios.delete(`https://bus-station-backend-265a.onrender.com/routes/${id}`, authHeader);
       fetchRoutes();
     } catch {
       setError("Failed to delete route.");

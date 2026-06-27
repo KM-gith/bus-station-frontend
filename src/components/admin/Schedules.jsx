@@ -22,9 +22,9 @@ function Schedules() {
   const fetchAll = async () => {
     try {
       const [s, b, r] = await Promise.all([
-        axios.get("${import.meta.env.VITE_API_URL}/schedules", authHeader),
-        axios.get("${import.meta.env.VITE_API_URL}/buses", authHeader),
-        axios.get("${import.meta.env.VITE_API_URL}/routes", authHeader),
+        axios.get("https://bus-station-backend-265a.onrender.com/schedules", authHeader),
+        axios.get("https://bus-station-backend-265a.onrender.com/buses", authHeader),
+        axios.get("https://bus-station-backend-265a.onrender.com/routes", authHeader),
       ]);
       setSchedules(s.data);
       setBuses(b.data);
@@ -44,10 +44,10 @@ function Schedules() {
     e.preventDefault();
     try {
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/schedules/${editId}`, form, authHeader);
+        await axios.put(`https://bus-station-backend-265a.onrender.com/schedules/${editId}`, form, authHeader);
         setEditId(null);
       } else {
-        await axios.post("${import.meta.env.VITE_API_URL}/schedules", form, authHeader);
+        await axios.post("https://bus-station-backend-265a.onrender.com/schedules", form, authHeader);
       }
       setForm({ bus: "", route: "", departureTime: "", arrivalTime: "", availableSeats: "", status: "scheduled" });
       fetchAll();
@@ -70,7 +70,7 @@ function Schedules() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/schedules/${id}`, authHeader);
+      await axios.delete(`https://bus-station-backend-265a.onrender.com/schedules/${id}`, authHeader);
       fetchAll();
     } catch {
       setError("Failed to delete schedule.");

@@ -18,7 +18,7 @@ function Buses() {
 
   const fetchBuses = async () => {
     try {
-      const res = await axios.get("${import.meta.env.VITE_API_URL}/buses", authHeader);
+      const res = await axios.get("https://bus-station-backend-265a.onrender.com/buses", authHeader);
       setBuses(res.data);
     } catch {
       setError("Failed to fetch buses.");
@@ -35,10 +35,10 @@ function Buses() {
     e.preventDefault();
     try {
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/buses/${editId}`, form, authHeader);
+        await axios.put(`https://bus-station-backend-265a.onrender.com/buses/${editId}`, form, authHeader);
         setEditId(null);
       } else {
-        await axios.post("${import.meta.env.VITE_API_URL}/buses", form, authHeader);
+        await axios.post("https://bus-station-backend-265a.onrender.com/buses", form, authHeader);
       }
       setForm({ plateNumber: "", busNumber: "", totalSeats: "", busType: "standard", status: "active" });
       fetchBuses();
@@ -60,7 +60,7 @@ function Buses() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/buses/${id}`, authHeader);
+      await axios.delete(`https://bus-station-backend-265a.onrender.com/buses/${id}`, authHeader);
       fetchBuses();
     } catch {
       setError("Failed to delete bus.");

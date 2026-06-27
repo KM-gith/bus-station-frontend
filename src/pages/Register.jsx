@@ -27,7 +27,7 @@ function Register() {
       return;
     }
     try {
-      await axios.post("${import.meta.env.VITE_API_URL}/auth/register", {
+      await axios.post("https://bus-station-backend-265a.onrender.com/auth/register", {
         name: form.name,
         email: form.email,
         password: form.password,

@@ -17,7 +17,7 @@ function PassengerDashboard() {
 
   const fetchSchedules = async () => {
     try {
-      const res = await axios.get("${import.meta.env.VITE_API_URL}/schedules", authHeader);
+      const res = await axios.get("https://bus-station-backend-265a.onrender.com/schedules", authHeader);
       setSchedules(res.data);
     } catch {
       setError("Failed to fetch schedules.");
@@ -26,7 +26,7 @@ function PassengerDashboard() {
 
   const fetchMyTickets = async () => {
     try {
-      const res = await axios.get("${import.meta.env.VITE_API_URL}/tickets/my", authHeader);
+      const res = await axios.get("https://bus-station-backend-265a.onrender.com/tickets/my", authHeader);
       setMyTickets(res.data);
     } catch {
       setError("Failed to fetch tickets.");
@@ -47,7 +47,7 @@ function PassengerDashboard() {
     setError("");
     setSuccess("");
     try {
-      await axios.post("${import.meta.env.VITE_API_URL}/tickets", { scheduleId, seatNumber }, authHeader);
+      await axios.post("https://bus-station-backend-265a.onrender.com/tickets", { scheduleId, seatNumber }, authHeader);
       setSuccess("Ticket booked successfully! ");
       fetchSchedules();
       fetchMyTickets();
@@ -60,7 +60,7 @@ function PassengerDashboard() {
     setError("");
     setSuccess("");
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/tickets/${ticketId}/cancel`, {}, authHeader);
+      await axios.put(`https://bus-station-backend-265a.onrender.com/tickets/${ticketId}/cancel`, {}, authHeader);
       setSuccess("Ticket cancelled.");
       fetchMyTickets();
       fetchSchedules();
