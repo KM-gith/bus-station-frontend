@@ -19,22 +19,7 @@ function PassengerDashboard() {
   const token = localStorage.getItem("token");
   const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
-  // Payment callback irraa deebi'e check godhi
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const payment = params.get("payment");
-    if (payment === "success") {
-      setSuccess("✅ Kaffaltii raawwatameera! Ticket kee booked ta'eera — email kee ilaali!");
-      setActiveTab("tickets");
-      fetchMyTickets();
-      fetchSchedules();
-    } else if (payment === "failed") {
-      setError("❌ Kaffaltii hin raawwatamne. Ammas yaalii godhi.");
-    } else if (payment === "already_booked") {
-      setError("⚠️ Ticket kanaan duraa booked godhameera.");
-    }
-  }, [location.search]);
-
+  // ✅ DURSA functions hunda declare godhi
   const fetchSchedules = async () => {
     try {
       const res = await axios.get(`${API}/schedules`, authHeader);
@@ -53,17 +38,41 @@ function PassengerDashboard() {
     }
   };
 
+  // ✅ BOODA useEffect — functions declare ta'an booda
   useEffect(() => {
     fetchSchedules();
     fetchMyTickets();
   }, []);
+
+  // ✅ Payment callback check
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const payment = params.get("payment");
+    const txRef = params.get("txRef");
+
+    if (payment === "success" && txRef) {
+      axios.get(`${API}/tickets/verify-payment?trx_ref=${txRef}`)
+        .then(() => {
+          setSuccess("✅ Ticket booked! Email kee ilaali!");
+          setActiveTab("tickets");
+          fetchMyTickets();
+          fetchSchedules();
+        })
+        .catch(() => {
+          setError("Verification failed.");
+        });
+    } else if (payment === "failed") {
+      setError("❌ Kaffaltii hin raawwatamne. Ammas yaalii godhi.");
+    } else if (payment === "already_booked") {
+      setError("⚠️ Ticket kanaan duraa booked godhameera.");
+    }
+  }, [location.search]);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  // Chapa payment jalqabi
   const handleBookTicket = async (scheduleId) => {
     const seatVal = document.getElementById(`seat-${scheduleId}`).value;
     if (!seatVal) {
@@ -79,7 +88,6 @@ function PassengerDashboard() {
         { scheduleId, seatNumber: parseInt(seatVal) },
         authHeader
       );
-      // Chapa checkout page redirect godhi
       window.location.href = res.data.checkoutUrl;
     } catch (err) {
       setError(err.response?.data?.message || "Payment initialization failed.");
