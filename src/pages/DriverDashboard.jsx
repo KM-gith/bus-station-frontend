@@ -14,7 +14,7 @@ function DriverDashboard() {
 
   const fetchSchedules = async () => {
     try {
-      const res = await axios.get("${import.meta.env.VITE_API_URL}/schedules", authHeader);
+      const res = await axios.get("https://bus-station-backend-265a.onrender.com/schedules", authHeader);
       setSchedules(res.data);
     } catch {
       setError("Failed to fetch schedules.");
@@ -30,7 +30,7 @@ function DriverDashboard() {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/schedules/${id}`, { status }, authHeader);
+      await axios.put(`https://bus-station-backend-265a.onrender.com/schedules/${id}`, { status }, authHeader);
       fetchSchedules();
     } catch {
       setError("Failed to update status.");

@@ -10,7 +10,7 @@ function Tickets() {
 
   const fetchTickets = async () => {
     try {
-      const res = await axios.get("${import.meta.env.VITE_API_URL}/tickets", authHeader);
+      const res = await axios.get("https://bus-station-backend-265a.onrender.com/tickets", authHeader);
       setTickets(res.data);
     } catch {
       setError("Failed to fetch tickets.");
