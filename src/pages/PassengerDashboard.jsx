@@ -1,32 +1,43 @@
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+
+const API = "https://bus-station-backend-265a.onrender.com";
 
 function PassengerDashboard() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const [schedules, setSchedules] = useState([]);
   const [myTickets, setMyTickets] = useState([]);
   const [activeTab, setActiveTab] = useState("search");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // Payment modal state
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentStep, setPaymentStep] = useState(1);
-  const [selectedSchedule, setSelectedSchedule] = useState(null);
-  const [seatNumber, setSeatNumber] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [accountNumber, setAccountNumber] = useState("");
-  const [isBooking, setIsBooking] = useState(false);
+  const [loadingPayment, setLoadingPayment] = useState(null);
 
   const token = localStorage.getItem("token");
   const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
+  // Payment callback irraa deebi'e check godhi
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const payment = params.get("payment");
+    if (payment === "success") {
+      setSuccess("✅ Kaffaltii raawwatameera! Ticket kee booked ta'eera — email kee ilaali!");
+      setActiveTab("tickets");
+      fetchMyTickets();
+      fetchSchedules();
+    } else if (payment === "failed") {
+      setError("❌ Kaffaltii hin raawwatamne. Ammas yaalii godhi.");
+    } else if (payment === "already_booked") {
+      setError("⚠️ Ticket kanaan duraa booked godhameera.");
+    }
+  }, [location.search]);
+
   const fetchSchedules = async () => {
     try {
-      const res = await axios.get("https://bus-station-backend-265a.onrender.com/schedules", authHeader);
+      const res = await axios.get(`${API}/schedules`, authHeader);
       setSchedules(res.data);
     } catch {
       setError("Failed to fetch schedules.");
@@ -35,7 +46,7 @@ function PassengerDashboard() {
 
   const fetchMyTickets = async () => {
     try {
-      const res = await axios.get("https://bus-station-backend-265a.onrender.com/tickets/my", authHeader);
+      const res = await axios.get(`${API}/tickets/my`, authHeader);
       setMyTickets(res.data);
     } catch {
       setError("Failed to fetch tickets.");
@@ -52,52 +63,35 @@ function PassengerDashboard() {
     navigate("/login");
   };
 
-  // Step 1 — Seat filuu fi modal banu
-  const handleOpenPayment = (schedule) => {
-    const seatVal = document.getElementById(`seat-${schedule._id}`).value;
+  // Chapa payment jalqabi
+  const handleBookTicket = async (scheduleId) => {
+    const seatVal = document.getElementById(`seat-${scheduleId}`).value;
     if (!seatVal) {
       setError("Please enter a seat number.");
       return;
     }
     setError("");
-    setSelectedSchedule(schedule);
-    setSeatNumber(seatVal);
-    setPaymentStep(1);
-    setPaymentMethod("");
-    setAccountNumber("");
-    setShowPaymentModal(true);
-  };
+    setLoadingPayment(scheduleId);
 
-  // Step Final — Book godhu
-  const handleConfirmBooking = async () => {
-    if (!accountNumber) {
-      setError("Please enter your account number.");
-      return;
-    }
-    setIsBooking(true);
-    setError("");
     try {
-      await axios.post(
-        "https://bus-station-backend-265a.onrender.com/tickets",
-        { scheduleId: selectedSchedule._id, seatNumber: parseInt(seatNumber) },
+      const res = await axios.post(
+        `${API}/tickets/initiate-payment`,
+        { scheduleId, seatNumber: parseInt(seatVal) },
         authHeader
       );
-      setSuccess(`Ticket booked successfully via ${paymentMethod}! 🎉`);
-      setShowPaymentModal(false);
-      fetchSchedules();
-      fetchMyTickets();
+      // Chapa checkout page redirect godhi
+      window.location.href = res.data.checkoutUrl;
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to book ticket.");
-      setShowPaymentModal(false);
+      setError(err.response?.data?.message || "Payment initialization failed.");
+      setLoadingPayment(null);
     }
-    setIsBooking(false);
   };
 
   const handleCancelTicket = async (ticketId) => {
     setError("");
     setSuccess("");
     try {
-      await axios.put(`https://bus-station-backend-265a.onrender.com/tickets/${ticketId}/cancel`, {}, authHeader);
+      await axios.put(`${API}/tickets/${ticketId}/cancel`, {}, authHeader);
       setSuccess("Ticket cancelled.");
       fetchMyTickets();
       fetchSchedules();
@@ -154,7 +148,7 @@ function PassengerDashboard() {
       {/* CONTENT */}
       <div className="max-w-5xl mx-auto px-6 py-6">
         {error && <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl mb-4 text-sm">⚠️ {error}</div>}
-        {success && <div className="bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-xl mb-4 text-sm">✅ {success}</div>}
+        {success && <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-4 text-sm font-medium">{success}</div>}
 
         {/* AVAILABLE BUSES */}
         {activeTab === "search" && (
@@ -192,7 +186,7 @@ function PassengerDashboard() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-2 items-end min-w-[100px]">
+                    <div className="flex flex-col gap-2 items-end min-w-[110px]">
                       <input
                         type="number"
                         placeholder="Seat No."
@@ -202,10 +196,11 @@ function PassengerDashboard() {
                         id={`seat-${s._id}`}
                       />
                       <button
-                        onClick={() => handleOpenPayment(s)}
-                        className="w-24 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-bold rounded-xl transition shadow-md shadow-blue-200"
+                        onClick={() => handleBookTicket(s._id)}
+                        disabled={loadingPayment === s._id}
+                        className="w-24 py-2.5 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white text-xs font-bold rounded-xl transition shadow-md shadow-blue-200"
                       >
-                        Book
+                        {loadingPayment === s._id ? "Loading..." : "💳 Pay & Book"}
                       </button>
                     </div>
                   </div>
@@ -252,117 +247,6 @@ function PassengerDashboard() {
           </div>
         )}
       </div>
-
-      {/* ✅ PAYMENT MODAL */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.6)" }}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-black text-gray-900">💳 Payment</h3>
-              <button onClick={() => setShowPaymentModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl font-bold">×</button>
-            </div>
-
-            {/* Route info */}
-            <div className="bg-blue-50 rounded-xl p-4 mb-6">
-              <p className="text-sm font-bold text-blue-700">{selectedSchedule?.route?.origin} → {selectedSchedule?.route?.destination}</p>
-              <p className="text-xs text-gray-500 mt-1">Seat: <span className="font-bold text-gray-700">{seatNumber}</span> | Price: <span className="font-bold text-blue-700">ETB {selectedSchedule?.route?.price}</span></p>
-            </div>
-
-            {/* Step 1 — Payment method filuu */}
-            {paymentStep === 1 && (
-              <div>
-                <p className="text-sm font-semibold text-gray-700 mb-4">Kaffaltii karaa maaliitin raawwatta?</p>
-                <div className="grid gap-3">
-                  <button
-                    onClick={() => { setPaymentMethod("TeleBirr"); setPaymentStep(2); }}
-                    className="w-full p-4 border-2 border-gray-200 hover:border-blue-600 hover:bg-blue-50 rounded-xl flex items-center gap-3 transition"
-                  >
-                    <span className="text-2xl">📱</span>
-                    <div className="text-left">
-                      <p className="font-bold text-gray-800">TeleBirr</p>
-                      <p className="text-xs text-gray-500">Telebirr account irraa kafali</p>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => { setPaymentMethod("Bank Account"); setPaymentStep(2); }}
-                    className="w-full p-4 border-2 border-gray-200 hover:border-blue-600 hover:bg-blue-50 rounded-xl flex items-center gap-3 transition"
-                  >
-                    <span className="text-2xl">🏦</span>
-                    <div className="text-left">
-                      <p className="font-bold text-gray-800">Bank Account</p>
-                      <p className="text-xs text-gray-500">Bank account irraa kafali</p>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 2 — Account number galchuu */}
-            {paymentStep === 2 && (
-              <div>
-                <button onClick={() => setPaymentStep(1)} className="text-blue-600 text-sm font-semibold mb-4 flex items-center gap-1">← Back</button>
-                <p className="text-sm font-semibold text-gray-700 mb-2">
-                  {paymentMethod === "TeleBirr" ? "📱 TeleBirr" : "🏦 Bank Account"} — Account Number galchi
-                </p>
-                <input
-                  type="text"
-                  placeholder={paymentMethod === "TeleBirr" ? "09XXXXXXXX" : "1000XXXXXXXXX"}
-                  value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
-                  className="w-full p-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-600 transition text-gray-800 font-mono text-lg tracking-wider mb-4"
-                />
-                <button
-                  onClick={() => { if (accountNumber) setPaymentStep(3); }}
-                  disabled={!accountNumber}
-                  className="w-full py-3 bg-blue-700 hover:bg-blue-800 disabled:bg-gray-300 text-white font-bold rounded-xl transition"
-                >
-                  Confirm →
-                </button>
-              </div>
-            )}
-
-            {/* Step 3 — Confirm */}
-            {paymentStep === 3 && (
-              <div>
-                <div className="bg-gray-50 rounded-xl p-4 mb-6 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Route</span>
-                    <span className="font-bold text-gray-800">{selectedSchedule?.route?.origin} → {selectedSchedule?.route?.destination}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Seat</span>
-                    <span className="font-bold text-gray-800">{seatNumber}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Payment</span>
-                    <span className="font-bold text-gray-800">{paymentMethod}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Account</span>
-                    <span className="font-bold text-gray-800 font-mono">{accountNumber}</span>
-                  </div>
-                  <div className="border-t pt-2 flex justify-between">
-                    <span className="font-bold text-gray-700">Total</span>
-                    <span className="font-black text-blue-700 text-lg">ETB {selectedSchedule?.route?.price}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={handleConfirmBooking}
-                  disabled={isBooking}
-                  className="w-full py-3.5 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white font-black rounded-xl transition text-base"
-                >
-                  {isBooking ? "Booking..." : "✅ Confirm & Book Ticket"}
-                </button>
-                <button onClick={() => setPaymentStep(2)} className="w-full py-2 text-gray-500 text-sm mt-2">← Back</button>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
