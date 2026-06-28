@@ -88,7 +88,7 @@ function PassengerDashboard() {
         { scheduleId, seatNumber: parseInt(seatVal) },
         authHeader
       );
-      window.location.href = res.data.checkoutUrl;
+      window.open(res.data.checkoutUrl, "_self");
     } catch (err) {
       setError(err.response?.data?.message || "Payment initialization failed.");
       setLoadingPayment(null);
