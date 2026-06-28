@@ -16,10 +16,10 @@ function PassengerDashboard() {
   const [success, setSuccess] = useState("");
   const [loadingPayment, setLoadingPayment] = useState(null);
 
+  // ✅ Token fi authHeader — useMemo osoo hin taane direct
   const token = localStorage.getItem("token");
   const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
-  // ✅ DURSA functions hunda declare godhi
   const fetchSchedules = async () => {
     try {
       const res = await axios.get(`${API}/schedules`, authHeader);
@@ -38,33 +38,50 @@ function PassengerDashboard() {
     }
   };
 
-  // ✅ BOODA useEffect — functions declare ta'an booda
   useEffect(() => {
-    fetchSchedules();
-    fetchMyTickets();
+    const loadData = async () => {
+      await fetchSchedules();
+      await fetchMyTickets();
+    };
+    loadData();
   }, []);
 
-  // ✅ Payment callback check
+  // ✅ Payment callback — token check dabalii
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const payment = params.get("payment");
     const txRef = params.get("txRef");
 
+    if (!payment) return;
+
+    // ✅ Token ammayyuu jiraa check godhi
+    const currentToken = localStorage.getItem("token");
+    if (!currentToken) {
+      navigate("/login");
+      return;
+    }
+
     if (payment === "success" && txRef) {
-      axios.get(`${API}/tickets/verify-payment?trx_ref=${txRef}`)
+      const currentAuthHeader = { headers: { Authorization: `Bearer ${currentToken}` } };
+      axios.get(`${API}/tickets/verify-payment?trx_ref=${txRef}`, currentAuthHeader)
         .then(() => {
           setSuccess("✅ Ticket booked! Email kee ilaali!");
           setActiveTab("tickets");
           fetchMyTickets();
           fetchSchedules();
+          // ✅ URL clean godhi — payment params haqii
+          navigate("/passenger", { replace: true });
         })
         .catch(() => {
-          setError("Verification failed.");
+          setError("Verification failed. Ticket manually check godhi.");
+          navigate("/passenger", { replace: true });
         });
     } else if (payment === "failed") {
       setError("❌ Kaffaltii hin raawwatamne. Ammas yaalii godhi.");
+      navigate("/passenger", { replace: true });
     } else if (payment === "already_booked") {
       setError("⚠️ Ticket kanaan duraa booked godhameera.");
+      navigate("/passenger", { replace: true });
     }
   }, [location.search]);
 
@@ -88,6 +105,9 @@ function PassengerDashboard() {
         { scheduleId, seatNumber: parseInt(seatVal) },
         authHeader
       );
+      // ✅ Token session irratti save godhi — Chapa page irraa deebi'uu yeroo argamu
+      sessionStorage.setItem("pre_payment_token", token);
+      sessionStorage.setItem("pre_payment_user", localStorage.getItem("user"));
       window.open(res.data.checkoutUrl, "_self");
     } catch (err) {
       setError(err.response?.data?.message || "Payment initialization failed.");
