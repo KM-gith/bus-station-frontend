@@ -148,7 +148,6 @@ function PassengerDashboard() {
       {/* NAVBAR */}
       <nav className="bg-blue-700 text-white px-6 py-4 flex justify-between items-center shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center text-xl"></div>
           <div>
             <h1 className="text-lg font-black tracking-tight">Bus Station System</h1>
             <p className="text-blue-200 text-xs font-medium">Passenger Dashboard</p>
@@ -248,7 +247,7 @@ function PassengerDashboard() {
         {/* MY TICKETS */}
         {activeTab === "tickets" && (
           <div>
-            <h2 className="text-2xl font-black text-gray-900 mb-6">🎫 My Tickets</h2>
+            <h2 className="text-2xl font-black text-gray-900 mb-6"> My Tickets</h2>
             {myTickets.filter(t => t.status !== "cancelled").length === 0 && (
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-blue-100 text-center text-gray-400">
                 No tickets yet. Book one from Available Buses!
