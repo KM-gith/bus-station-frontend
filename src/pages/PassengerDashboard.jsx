@@ -58,7 +58,7 @@ function PassengerDashboard() {
     navigate("/login");
   };
 
-  // Step 1 — Book button cuqaasame
+  
   const handleOpenModal = (schedule) => {
     const seatVal = document.getElementById(`seat-${schedule._id}`).value;
     if (!seatVal) {
@@ -78,15 +78,15 @@ function PassengerDashboard() {
   // Final — Book godhu
   const handleConfirmPayment = async () => {
     if (!accountNumber) {
-      setError("Account number galchi.");
+      setError("Insert account number.");
       return;
     }
     if (!amount || parseFloat(amount) <= 0) {
-      setError("Amount sirrii galchi.");
+      setError("Insert correct Amount.");
       return;
     }
     if (parseFloat(amount) < selectedSchedule.route?.price) {
-      setError(`Amount xiqqaa dha. ETB ${selectedSchedule.route?.price} kaffaluu qabda.`);
+      setError(` Minimum amount not met!. ETB ${selectedSchedule.route?.price} you have to pay.`);
       return;
     }
 
@@ -106,7 +106,7 @@ function PassengerDashboard() {
         authHeader
       );
       setShowModal(false);
-      setSuccess("✅ Ticket booked! Email kee ilaali — kaffaltii details ergameera!");
+      setSuccess("Ticket booked! Check your email — payment details have been sent!");
       setActiveTab("tickets");
       await fetchMyTickets();
       await fetchSchedules();
@@ -130,16 +130,16 @@ function PassengerDashboard() {
   };
 
   const tabs = [
-    { id: "search", label: "🔍 Available Buses" },
-    { id: "tickets", label: "🎫 My Tickets" },
+    { id: "search", label: " Available Buses" },
+    { id: "tickets", label: " My Tickets" },
   ];
 
   const paymentMethods = [
-    { id: "telebirr", label: "TeleBirr", icon: "📱", placeholder: "09XXXXXXXX" },
-    { id: "cbe", label: "CBE Birr", icon: "🏦", placeholder: "1000XXXXXXXXXX" },
-    { id: "awash", label: "Awash Bank", icon: "🏛️", placeholder: "013XXXXXXXXX" },
-    { id: "amole", label: "Amole", icon: "💳", placeholder: "09XXXXXXXX" },
-    { id: "coopay", label: "COOPay", icon: "🤝", placeholder: "09XXXXXXXX" },
+    { id: "telebirr", label: "TeleBirr", icon: "", placeholder: "09XXXXXXXX" },
+    { id: "cbe", label: "CBE Birr", icon: "", placeholder: "1000XXXXXXXXXX" },
+    { id: "awash", label: "Awash Bank", icon: "", placeholder: "013XXXXXXXXX" },
+    { id: "amole", label: "Amole", icon: "", placeholder: "09XXXXXXXX" },
+    { id: "coopay", label: "COOPay", icon: "", placeholder: "09XXXXXXXX" },
   ];
 
   return (
@@ -148,7 +148,7 @@ function PassengerDashboard() {
       {/* NAVBAR */}
       <nav className="bg-blue-700 text-white px-6 py-4 flex justify-between items-center shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center text-xl">🚌</div>
+          <div className="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center text-xl"></div>
           <div>
             <h1 className="text-lg font-black tracking-tight">Bus Station System</h1>
             <p className="text-blue-200 text-xs font-medium">Passenger Dashboard</p>
@@ -184,13 +184,13 @@ function PassengerDashboard() {
 
       {/* CONTENT */}
       <div className="max-w-5xl mx-auto px-6 py-6">
-        {error && <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl mb-4 text-sm">⚠️ {error}</div>}
+        {error && <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl mb-4 text-sm"> {error}</div>}
         {success && <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-4 text-sm font-medium">{success}</div>}
 
         {/* AVAILABLE BUSES */}
         {activeTab === "search" && (
           <div className="grid gap-4">
-            <h2 className="text-2xl font-black text-gray-900">🔍 Available Buses</h2>
+            <h2 className="text-2xl font-black text-gray-900"> Available Buses</h2>
             {schedules.filter(s => s.status === "scheduled" && s.availableSeats > 0).length === 0 && (
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-blue-100 text-center text-gray-400">
                 No available buses at the moment.
@@ -236,7 +236,7 @@ function PassengerDashboard() {
                         onClick={() => handleOpenModal(s)}
                         className="w-24 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold rounded-xl transition shadow-md shadow-blue-200"
                       >
-                        💳 Book
+                         Book
                       </button>
                     </div>
                   </div>
@@ -292,7 +292,7 @@ function PassengerDashboard() {
             {/* Modal Header */}
             <div className="bg-blue-700 px-6 py-4 flex justify-between items-center">
               <div>
-                <h3 className="text-white font-black text-lg">💳 Kaffaltii</h3>
+                <h3 className="text-white font-black text-lg"> Payment</h3>
                 <p className="text-blue-200 text-xs mt-0.5">
                   {selectedSchedule?.route?.origin} → {selectedSchedule?.route?.destination} | Seat {seatNumber}
                 </p>
@@ -312,12 +312,12 @@ function PassengerDashboard() {
             </div>
 
             <div className="p-6">
-              {error && <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl mb-4 text-xs">⚠️ {error}</div>}
+              {error && <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl mb-4 text-xs"> {error}</div>}
 
-              {/* Step 1 — Payment Method filuu */}
+              {/* Step 1 — Choose Payment Method  */}
               {modalStep === 1 && (
                 <div>
-                  <p className="text-sm font-bold text-gray-700 mb-4">Kaffaltii karaa maaliitin raawwatta?</p>
+                  <p className="text-sm font-bold text-gray-700 mb-4"> Choose your payment method</p>
                   <div className="grid gap-2">
                     {paymentMethods.map((method) => (
                       <button
@@ -337,7 +337,7 @@ function PassengerDashboard() {
                 </div>
               )}
 
-              {/* Step 2 — Account fi Amount galchuu */}
+              {/*Step 2 — Enter Account & Amount */}
               {modalStep === 2 && (
                 <div>
                   <button onClick={() => setModalStep(1)} className="text-blue-600 text-sm font-semibold mb-4 flex items-center gap-1">
@@ -377,15 +377,15 @@ function PassengerDashboard() {
                       className="w-full p-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-600 transition text-gray-800 font-bold text-lg"
                     />
                     {parseFloat(amount) < selectedSchedule?.route?.price && amount && (
-                      <p className="text-red-500 text-xs mt-1">⚠️ Amount xiqqaa dha!</p>
+                      <p className="text-red-500 text-xs mt-1">Minimum amount not met!</p>
                     )}
                   </div>
 
                   <button
                     onClick={() => {
-                      if (!accountNumber) { setError("Account number galchi."); return; }
+                      if (!accountNumber) { setError("Insert account number."); return; }
                       if (!amount || parseFloat(amount) < selectedSchedule?.route?.price) {
-                        setError(`Minimum ETB ${selectedSchedule?.route?.price} kaffaluu qabda.`);
+                        setError(`Minimum ETB ${selectedSchedule?.route?.price} You have to pay.`);
                         return;
                       }
                       setError("");
@@ -393,7 +393,7 @@ function PassengerDashboard() {
                     }}
                     className="w-full py-3.5 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl transition"
                   >
-                    Itti fufi →
+                    continue  →
                   </button>
                 </div>
               )}
@@ -401,7 +401,7 @@ function PassengerDashboard() {
               {/* Step 3 — Confirm */}
               {modalStep === 3 && (
                 <div>
-                  <p className="text-sm font-bold text-gray-700 mb-4">Mirkaneeffadhu — odeeffannoo kee ilaali:</p>
+                  <p className="text-sm font-bold text-gray-700 mb-4">Confirm — review your information:</p>
 
                   <div className="bg-gray-50 rounded-xl p-4 space-y-3 mb-6">
                     <div className="flex justify-between text-sm">
@@ -429,7 +429,7 @@ function PassengerDashboard() {
                       <span className="font-bold text-gray-800 font-mono">{accountNumber}</span>
                     </div>
                     <div className="border-t border-gray-200 pt-3 flex justify-between">
-                      <span className="font-bold text-gray-700">Kaffalame</span>
+                      <span className="font-bold text-gray-700">Paid</span>
                       <span className="font-black text-blue-700 text-lg">ETB {amount}</span>
                     </div>
                   </div>
@@ -439,7 +439,7 @@ function PassengerDashboard() {
                     disabled={isProcessing}
                     className="w-full py-3.5 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white font-black rounded-xl transition text-base"
                   >
-                    {isProcessing ? "⏳ Processing..." : "✅ Mirkaneeffadhu & Book godhi"}
+                    {isProcessing ? "⏳ Processing..." : "Confirm & Book"}
                   </button>
                   <button onClick={() => setModalStep(2)} className="w-full py-2 text-gray-500 text-sm mt-2 hover:text-gray-700">
                     ← Back
