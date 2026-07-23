@@ -59,13 +59,25 @@ function PassengerDashboard() {
   };
 
   
-  const handleOpenModal = (schedule) => {
-    const seatVal = document.getElementById(`seat-${schedule._id}`).value;
-    if (!seatVal) {
-      setError("Please enter a seat number.");
-      return;
-    }
-    setError("");
+const handleOpenModal = async (schedule) => {
+  const seatVal = document.getElementById(`seat-${schedule._id}`).value;
+  if (!seatVal) {
+    setError("Please enter a seat number.");
+    return;
+  }
+  setError("");
+
+  
+  try {
+    await axios.post(
+      `${API}/tickets/check-seat`,
+      {
+        scheduleId: schedule._id,
+        seatNumber: parseInt(seatVal),
+      },
+      authHeader
+    );
+    // Seat available — modal bani
     setSelectedSchedule(schedule);
     setSeatNumber(seatVal);
     setAmount(schedule.route?.price || "");
@@ -73,7 +85,11 @@ function PassengerDashboard() {
     setAccountNumber("");
     setModalStep(1);
     setShowModal(true);
-  };
+  } catch (err) {
+    // Seat taken — modal hin banin error agarsiisi
+    setError(err.response?.data?.message || "Seat is not available.");
+  }
+};
 
   // Final — Book godhu
   const handleConfirmPayment = async () => {
