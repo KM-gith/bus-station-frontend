@@ -7,6 +7,7 @@ function Register() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     confirm: "",
     role: "passenger",
@@ -31,6 +32,7 @@ function Register() {
       await axios.post("https://bus-station-backend-265a.onrender.com/auth/register", {
         name: form.name,
         email: form.email,
+        phone: form.phone,
         password: form.password,
         role: form.role,
         adminCode: form.adminCode,
@@ -42,6 +44,9 @@ function Register() {
     }
   };
 
+  const inputStyle = "w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50";
+  const inputBg = { background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" };
+
   return (
     <div
       className="min-h-screen relative flex items-center justify-center p-6"
@@ -52,10 +57,8 @@ function Register() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-50" />
 
-      {/* Glass Form Card */}
       <div
         className="relative z-10 w-full max-w-md p-8 rounded-2xl shadow-2xl"
         style={{
@@ -65,123 +68,84 @@ function Register() {
           border: "1px solid rgba(255, 255, 255, 0.3)",
         }}
       >
-        {/* Logo */}
         <div className="text-center mb-6">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+            style={{ background: "rgba(255,255,255,0.2)" }}>
+           
+          </div>
           <h2 className="text-3xl font-black text-white">Create Account</h2>
-          <p className="text-blue-200 text-sm mt-1">Join Bus Station Scheduling System</p>
+          <p className="text-blue-200 text-sm mt-1">Join Bus Station System</p>
         </div>
 
         {error && (
-          <div className="bg-red-500 bg-opacity-80 text-white text-sm p-3 rounded-xl mb-4">
-            ⚠️ {error}
-          </div>
+          <div className="bg-red-500 bg-opacity-80 text-white text-sm p-3 rounded-xl mb-4"> {error}</div>
         )}
         {success && (
-          <div className="bg-green-500 bg-opacity-80 text-white text-sm p-3 rounded-xl mb-4">
-            ✅ {success}
-          </div>
+          <div className="bg-green-500 bg-opacity-80 text-white text-sm p-3 rounded-xl mb-4"> {success}</div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label className="text-sm font-semibold text-white mb-1.5 block">Full Name</label>
-            <input
-              name="name"
-              type="text"
-              placeholder="Kitesa Merga"
-              value={form.name}
-              onChange={handleChange}
-              required
-              className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
-            />
+            <input name="name" type="text" placeholder="Abebe Kebede"
+              value={form.name} onChange={handleChange} required
+              className={inputStyle} style={inputBg} />
           </div>
           <div>
             <label className="text-sm font-semibold text-white mb-1.5 block">Email Address</label>
-            <input
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              value={form.email}
-              onChange={handleChange}
-              required
-              className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
-            />
+            <input name="email" type="email" placeholder="you@example.com"
+              value={form.email} onChange={handleChange} required
+              className={inputStyle} style={inputBg} />
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-white mb-1.5 block">
+              Phone Number <span className="text-blue-200 font-normal">(SMS confirmation)</span>
+            </label>
+            <input name="phone" type="tel" placeholder="09XXXXXXXX"
+              value={form.phone} onChange={handleChange} required
+              className={inputStyle} style={inputBg} />
           </div>
           <div>
             <label className="text-sm font-semibold text-white mb-1.5 block">Password</label>
-            <input
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={handleChange}
-              required
-              className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
-            />
+            <input name="password" type="password" placeholder="••••••••"
+              value={form.password} onChange={handleChange} required
+              className={inputStyle} style={inputBg} />
           </div>
           <div>
             <label className="text-sm font-semibold text-white mb-1.5 block">Confirm Password</label>
-            <input
-              name="confirm"
-              type="password"
-              placeholder="••••••••"
-              value={form.confirm}
-              onChange={handleChange}
-              required
-              className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
-            />
+            <input name="confirm" type="password" placeholder="••••••••"
+              value={form.confirm} onChange={handleChange} required
+              className={inputStyle} style={inputBg} />
           </div>
           <div>
             <label className="text-sm font-semibold text-white mb-1.5 block">Register as</label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
+            <select name="role" value={form.role} onChange={handleChange}
               className="w-full p-3.5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              style={{ background: "rgba(30,58,138,0.8)", border: "1px solid rgba(255,255,255,0.3)" }}
-            >
+              style={{ background: "rgba(30,58,138,0.8)", border: "1px solid rgba(255,255,255,0.3)" }}>
               <option value="passenger"> Passenger</option>
               <option value="driver"> Driver</option>
               <option value="admin"> Admin</option>
             </select>
           </div>
 
-          {/* ✅ Admin code input — admin select godhan qofa mul'ata */}
           {form.role === "admin" && (
             <div>
-              <label className="text-sm font-semibold text-white mb-1.5 block">
-                 Admin Secret Code
-              </label>
-              <input
-                name="adminCode"
-                type="password"
-                placeholder="Enter secret code"
-                value={form.adminCode}
-                onChange={handleChange}
-                required
-                className="w-full p-3.5 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-                style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}
-              />
+              <label className="text-sm font-semibold text-white mb-1.5 block"> Admin Secret Code</label>
+              <input name="adminCode" type="password" placeholder="Enter secret code"
+                value={form.adminCode} onChange={handleChange} required
+                className={inputStyle} style={inputBg} />
             </div>
           )}
 
-          <button
-            type="submit"
-            className="w-full p-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition text-base mt-1 shadow-lg"
-          >
+          <button type="submit"
+            className="w-full p-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition text-base mt-1 shadow-lg">
             Create Account →
           </button>
         </form>
 
         <p className="text-center text-sm text-blue-200 mt-6">
           Already have an account?{" "}
-          <Link to="/login" className="text-white font-bold hover:underline">
-            Sign in
-          </Link>
+          <Link to="/login" className="text-white font-bold hover:underline">Sign in</Link>
         </p>
       </div>
     </div>
